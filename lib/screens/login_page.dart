@@ -5,15 +5,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_frontend/widgets/header.dart'; // Adjust the path based on your project structure
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  dynamic roleInfo;
 
   Future<void> _login() async {
     final response = await http.post(
@@ -30,12 +31,25 @@ class _LoginPageState extends State<LoginPage> {
       final data = json.decode(response.body);
       final token = data['token'];
 
-      // Store JWT in local storage
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('jwt', token);
+      final roleResponse = await http
+          .get(Uri.parse('http://localhost:5000/api/auth/role'), headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      });
 
-      // Navigate to the next screen or show success
-      Navigator.pushNamed(context, '/');
+      if (roleResponse.statusCode == 200) {
+        roleInfo = json.decode(roleResponse.body)['userType'];
+        final userType = roleInfo?.toString() ?? "customer";
+        // Store JWT in local storage
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwt', token);
+        await prefs.setString('role', userType);
+      }
+      if (roleInfo == 'admin') {
+        Navigator.pushNamed(context, '/admin/dashboard');
+      } else {
+        Navigator.pushNamed(context, '/');
+      }
     } else {
       // Handle error
       ScaffoldMessenger.of(context).showSnackBar(
@@ -81,10 +95,10 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _login,
-                      child: Text('Login'),
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(double.infinity, 40),
                       ),
+                      child: Text('Login'),
                     ),
                   ],
                 ),

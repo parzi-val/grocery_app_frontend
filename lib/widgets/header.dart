@@ -4,27 +4,34 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Header extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
+  final Widget? leading; // New parameter for custom leading action
 
   const Header({
     super.key,
     required this.title,
     required this.actions,
+    this.leading, // Accept the custom leading widget
   });
 
   @override
-  _HeaderState createState() => _HeaderState();
+  HeaderState createState() => HeaderState();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _HeaderState extends State<Header> {
+class HeaderState extends State<Header> {
   bool isLoggedIn = false;
+  bool isCustomLeading = false; // New variable to check for custom leading
+  bool admin = false;
 
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
+    _checkAdminStatus();
+    // Use the correct syntax for conditional assignment
+    isCustomLeading = widget.leading != null;
   }
 
   // Method to check if a JWT exists in local storage
@@ -37,51 +44,73 @@ class _HeaderState extends State<Header> {
     });
   }
 
+  // Method to check admin status from local storage
+  Future<void> _checkAdminStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? role = prefs.getString('role'); // Read the role as a string
+    setState(() {
+      admin = role == 'admin'; // Check if the role is 'admin'
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(widget.title),
-      centerTitle: true,
       elevation: 0,
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-      leading: IconButton(
-        icon: Icon(Icons.home, size: 30), // Icon for the product page
-        onPressed: () {
-          // Navigate to the product page
-          Navigator.pushNamed(context, '/');
-        },
-      ),
+      backgroundColor:
+          const Color.fromRGBO(0, 106, 103, 1), // Change to a shade of green
+      foregroundColor: Colors.white, // Set foreground color for contrast
+      leading: widget.leading ??
+          IconButton(
+            icon:
+                Icon(admin ? Icons.admin_panel_settings : Icons.home, size: 30),
+            onPressed: () {
+              if (admin) {
+                Navigator.pushNamed(context, '/admin/dashboard');
+              } else {
+                Navigator.pushNamed(context, '/');
+              }
+            },
+          ),
       actions: [
         ...widget.actions!,
+        isCustomLeading
+            ? IconButton(
+                icon: Icon(Icons.apps, size: 30), // Additional action icon
+                onPressed: () {
+                  Navigator.pushNamed(
+                      context, '/'); // Navigate to the product page
+                },
+              )
+            : Container(),
         IconButton(
           icon: Icon(Icons.shopping_cart, size: 30), // Cart icon
           onPressed: () {
-            // Navigate to the cart page
-            Navigator.pushNamed(context, '/cart');
+            Navigator.pushNamed(context, '/cart'); // Navigate to the cart page
           },
         ),
-        // Conditional widget based on login status
         isLoggedIn
             ? TextButton(
                 onPressed: () {
-                  // Navigate to the profile page
-                  Navigator.pushNamed(context, '/profile');
+                  Navigator.pushNamed(
+                      context, '/profile'); // Navigate to the profile page
                 },
                 child: Icon(
                   Icons.account_circle, // Profile icon
-                  size: 30, // Set the size of the icon
-                  color: Colors.black, // Set the color if needed
+                  size: 30,
+                  color: Colors.white, // Change icon color for contrast
                 ),
               )
             : TextButton(
                 onPressed: () {
-                  // Navigate to the login page
-                  Navigator.pushNamed(context, '/login');
+                  Navigator.pushNamed(
+                      context, '/login'); // Navigate to the login page
                 },
                 child: Text(
                   'Login',
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                      color: Colors.white), // Change text color for contrast
                 ),
               ),
       ],

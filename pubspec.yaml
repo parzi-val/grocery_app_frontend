@@ -37,6 +37,7 @@ dependencies:
   http: ^1.2.2 # For making API calls
   provider: ^6.0.0 # For state management (optional)
   shared_preferences: ^2.0.6 # For local storage (optional)
+  dropdown_search: ^5.0.2
 
 dev_dependencies:
   flutter_test:

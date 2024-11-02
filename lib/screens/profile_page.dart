@@ -5,13 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_frontend/widgets/header.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  ProfilePageState createState() => ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic>? userInfo;
   bool isLoading = true;
 
@@ -22,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final _stateController = TextEditingController();
   final _postalCodeController = TextEditingController();
   final _countryController = TextEditingController();
+  final _pnoController = TextEditingController();
 
   @override
   void initState() {
@@ -50,13 +51,14 @@ class _ProfilePageState extends State<ProfilePage> {
         });
 
         // Initialize the controllers with user info
-        _nameController.text = userInfo!['name'];
-        _emailController.text = userInfo!['email'];
-        _streetController.text = userInfo!['address']['street'];
-        _cityController.text = userInfo!['address']['city'];
-        _stateController.text = userInfo!['address']['state'];
-        _postalCodeController.text = userInfo!['address']['postalCode'];
-        _countryController.text = userInfo!['address']['country'];
+        _nameController.text = userInfo?['name'] ?? '';
+        _emailController.text = userInfo?['email'] ?? '';
+        _streetController.text = userInfo?['address']?['street'] ?? '';
+        _cityController.text = userInfo?['address']?['city'] ?? '';
+        _stateController.text = userInfo?['address']?['state'] ?? '';
+        _postalCodeController.text = userInfo?['address']?['postalCode'] ?? '';
+        _countryController.text = userInfo?['address']?['country'] ?? '';
+        _pnoController.text = userInfo?['phoneNumber'] ?? '';
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to load profile data.')),
@@ -75,7 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (context) {
         return Dialog(
-          child: Container(
+          child: SizedBox(
             width: 400, // Set the desired width for the dialog here
             child: AlertDialog(
               title: Text('Edit Profile'),
@@ -98,6 +100,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: TextField(
                         controller: _emailController,
                         decoration: InputDecoration(labelText: 'Email'),
+                      ),
+                    ),
+                    SizedBox(
+                      width:
+                          350, // Set the desired width for the TextFields here
+                      child: TextField(
+                        controller: _pnoController,
+                        decoration: InputDecoration(labelText: 'Phone Number'),
                       ),
                     ),
                     SizedBox(height: 10), // Spacing between fields
@@ -154,11 +164,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     final state = _stateController.text;
                     final postalCode = _postalCodeController.text;
                     final country = _countryController.text;
+                    final phoneNumber = _pnoController.text;
 
                     // Create a JSON object with the collected data
                     final Map<String, dynamic> userData = {
                       'name': name,
                       'email': email,
+                      'phoneNumber': phoneNumber,
                       'address': {
                         'street': street,
                         'city': city,
@@ -220,6 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt'); // Clear the JWT token
+    await prefs.remove('role'); // Clear the role
     Navigator.pushReplacementNamed(context, '/'); // Navigate to the home page
   }
 
@@ -277,11 +290,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(height: 5),
                         Text('Email: ${userInfo!['email']}'),
                         SizedBox(height: 5),
-                        Text('Address:'),
-                        Text('${userInfo!['address']['street']}'),
                         Text(
-                            '${userInfo!['address']['city']}, ${userInfo!['address']['state']} ${userInfo!['address']['postalCode']}'),
-                        Text('${userInfo!['address']['country']}'),
+                            'Phone Number: ${userInfo!['phoneNumber']?.isNotEmpty == true ? userInfo!['phoneNumber'] : 'not set'}'),
+                        SizedBox(height: 10),
+                        Text('Address:'),
+                        Text('${userInfo?['address']?['street'] ?? ''}'),
+                        Text(
+                            '${userInfo?['address']?['city'] ?? ''} ${userInfo?['address']?['state'] ?? ''} ${userInfo?['address']?['postalCode'] ?? ''}'),
+                        Text(
+                            '${userInfo?['address']?['country'] ?? 'not available'}'),
                       ] else
                         Text('User information not available.'),
                     ],
