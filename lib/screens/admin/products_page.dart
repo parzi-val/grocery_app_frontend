@@ -296,95 +296,91 @@ class AdminProductPageState extends State<AdminProductPage> {
     final itemWidth = screenWidth / 4; // Dividing the screen width by 4
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Admin Product Page'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add, size: 30),
-            onPressed: _showAddDialog,
-          ),
-        ],
-      ),
-      body: GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4, // 4 items in a row
-          childAspectRatio: itemWidth / 250, // Adjust for height-to-width ratio
+        appBar: AppBar(
+          title: Text('Admin Product Page'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.add, size: 30),
+              onPressed: _showAddDialog,
+            ),
+          ],
         ),
-        itemCount: products.length,
-        itemBuilder: (BuildContext context, int index) {
-          final product = products[index];
-          final shortenedDescription = product['description'].length > 50
-              ? product['description'].substring(0, 50) + '...'
-              : product['description'];
+        body: GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4, // 4 items in a row
+              childAspectRatio:
+                  itemWidth / 250, // Adjust for height-to-width ratio
+            ),
+            itemCount: products.length,
+            itemBuilder: (BuildContext context, int index) {
+              final product = products[index];
+              final shortenedDescription = product['description'].length > 50
+                  ? product['description'].substring(0, 50) + '...'
+                  : product['description'];
 
-          return Tooltip(
-            message:
-                'Stock: ${product['stock']}\nAmount: \$${product['price']}',
-            padding: EdgeInsets.all(8),
-            margin: EdgeInsets.symmetric(horizontal: 16),
-            showDuration: Duration(seconds: 2),
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            textStyle: TextStyle(color: Colors.white),
-            child: Card(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Padding(padding: const EdgeInsets.all(8.0)),
-                  Image.network(
-                    product['imageUrl'],
-                    height: 125,
-                    width: 125, // Make the image width dynamic
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.broken_image, size: 125);
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      product['name'],
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                      shortenedDescription,
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => _showEditDialog(
-                            product['_id'],
+              return InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/product',
+                      arguments: {'id': product['_id']},
+                    );
+                  },
+                  child: Card(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Padding(padding: const EdgeInsets.all(8.0)),
+                        Image.network(
+                          product['imageUrl'],
+                          height: 125,
+                          width: 125, // Make the image width dynamic
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.broken_image, size: 125);
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
                             product['name'],
-                            product['description'],
-                            "${product['price']}",
-                            "${product['stock']}"),
-                        child: Text('Edit', style: TextStyle(fontSize: 12)),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => _confirmDelete(product['_id']),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            shortenedDescription,
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => _showEditDialog(
+                                  product['_id'],
+                                  product['name'],
+                                  product['description'],
+                                  "${product['price']}",
+                                  "${product['stock']}"),
+                              child:
+                                  Text('Edit', style: TextStyle(fontSize: 12)),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () => _confirmDelete(product['_id']),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ));
+            }));
   }
 }

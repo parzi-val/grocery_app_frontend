@@ -4,6 +4,7 @@ import 'screens/product_page.dart';
 import 'screens/cart_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/admin_dashboard.dart';
+import 'widgets/product.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) =>
             const ProfilePage(), // Route to the Profile Page
         '/admin/dashboard': (context) => const AdminDashboard(),
+        '/product': (context) => IndiProductPage(),
       },
     );
   }
