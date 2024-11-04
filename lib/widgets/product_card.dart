@@ -22,7 +22,6 @@ class ProductCardState extends State<ProductCard> {
     super.initState();
   }
 
-  // Method to show edit product dialog
   void _showEditDialog(
       String id, String name, String description, String price, String stock) {
     final nameController = TextEditingController(text: name);
@@ -55,7 +54,6 @@ class ProductCardState extends State<ProductCard> {
           actions: [
             TextButton(
               onPressed: () async {
-                // Call the PUT request to update the product
                 await http.put(
                   Uri.parse('http://localhost:5000/api/products/$id'),
                   headers: {
@@ -98,7 +96,6 @@ class ProductCardState extends State<ProductCard> {
     }
   }
 
-  // Method to confirm deletion
   void _confirmDelete(String id) {
     showDialog(
       context: context,
@@ -109,14 +106,13 @@ class ProductCardState extends State<ProductCard> {
           actions: [
             TextButton(
               onPressed: () async {
-                // Call the DELETE request
                 await http.delete(
                     Uri.parse('http://localhost:5000/api/products/?id=$id'),
                     headers: {
                       'Authorization': 'Bearer ${await Auth.getUser()}'
                     });
                 Navigator.of(context).pop();
-                _fetchProducts(); // Refresh the product list
+                _fetchProducts();
                 globals.adminProductPageKey.currentState?.refresh();
               },
               child: Text('Delete'),
@@ -135,7 +131,7 @@ class ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
-    final product = widget.product; // Access the product
+    final product = widget.product;
 
     return InkWell(
       onTap: () {

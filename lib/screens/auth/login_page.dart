@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_frontend/widgets/header.dart'; // Adjust the path based on your project structure
+import 'package:grocery_frontend/widgets/header.dart';
 import 'package:go_router/go_router.dart';
 import 'package:grocery_frontend/utils/auth.dart';
 
@@ -63,7 +63,6 @@ class LoginPageState extends State<LoginPage> {
                     SizedBox(height: 10),
                     TextButton(
                       onPressed: () {
-                        // Navigate to the registration page using the route
                         context.go('/register');
                       },
                       child: Text('Don\'t have an account? Register here'),
@@ -80,9 +79,7 @@ class LoginPageState extends State<LoginPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.help),
-            onPressed: () {
-              // Action when help icon is pressed
-            },
+            onPressed: () {},
           ),
         ],
       ),

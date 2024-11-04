@@ -1,4 +1,3 @@
-// lib/screens/admin/monitoring_page.dart
 import 'package:flutter/material.dart';
 
 class MonitoringPage extends StatelessWidget {

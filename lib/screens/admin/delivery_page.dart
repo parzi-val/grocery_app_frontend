@@ -1,4 +1,3 @@
-// lib/screens/admin/delivery_page.dart
 import 'package:flutter/material.dart';
 
 class DeliveryPage extends StatelessWidget {

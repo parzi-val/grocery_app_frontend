@@ -10,8 +10,7 @@ class Auth {
   static Future<void> login(
       BuildContext context, String email, String password) async {
     final response = await http.post(
-      Uri.parse(
-          'http://localhost:5000/api/auth/login'), // Update with your API endpoint
+      Uri.parse('http://localhost:5000/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'email': email,
@@ -32,7 +31,7 @@ class Auth {
       if (roleResponse.statusCode == 200) {
         roleInfo = json.decode(roleResponse.body)['userType'];
         final userType = roleInfo?.toString() ?? "customer";
-        // Store JWT in local storage
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt', token);
         await prefs.setString('role', userType);
@@ -43,7 +42,6 @@ class Auth {
         context.go('/');
       }
     } else {
-      // Handle error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed!')),
       );
@@ -53,8 +51,7 @@ class Auth {
   static Future<void> register(
       BuildContext context, String name, String email, String password) async {
     final response = await http.post(
-      Uri.parse(
-          'http://localhost:5000/api/auth/register'), // Update with your API endpoint
+      Uri.parse('http://localhost:5000/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'name': name,
@@ -65,13 +62,11 @@ class Auth {
     );
 
     if (response.statusCode == 201) {
-      // Registration successful
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Registration successful!')),
       );
       context.go('/login');
     } else {
-      // Handle error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Registration failed!')),
       );
@@ -95,12 +90,11 @@ class Auth {
     await prefs.remove('role');
     await prefs.remove('jwt');
 
-    // Show a snackbar or navigate after logout
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Logged out successfully')),
     );
-    // Optionally, navigate to the login page
-    context.go('/login'); // Adjust the route as necessary
+
+    context.go('/login');
   }
 
   static Future<bool> isAdmin() async {

@@ -17,7 +17,7 @@ class RegisterPageState extends State<RegisterPage> {
   String? password;
   String? confirmPassword;
   String passwordStrength = '';
-  bool showPasswordStrength = false; // New variable to control visibility
+  bool showPasswordStrength = false;
 
   void _checkPasswordStrength(String password) {
     if (password.length < 6) {
@@ -52,9 +52,7 @@ class RegisterPageState extends State<RegisterPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.help),
-            onPressed: () {
-              // Action when help icon is pressed
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -62,7 +60,7 @@ class RegisterPageState extends State<RegisterPage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SizedBox(
-            width: 400, // Set a fixed width for the card
+            width: 400,
             child: Card(
               elevation: 8,
               shape: RoundedRectangleBorder(
@@ -98,7 +96,7 @@ class RegisterPageState extends State<RegisterPage> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
-                          // Simple email validation
+
                           if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
                             return 'Please enter a valid email';
                           }
@@ -139,7 +137,7 @@ class RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       SizedBox(height: 20),
-                      if (showPasswordStrength) // Conditionally display the password strength
+                      if (showPasswordStrength)
                         Text(
                           'Password Strength: $passwordStrength',
                           style: TextStyle(
@@ -154,8 +152,7 @@ class RegisterPageState extends State<RegisterPage> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             setState(() {
-                              showPasswordStrength =
-                                  true; // Show password strength on register
+                              showPasswordStrength = true;
                             });
                             Auth.register(context, name.toString(),
                                 email.toString(), password.toString());
@@ -166,7 +163,6 @@ class RegisterPageState extends State<RegisterPage> {
                       SizedBox(height: 10),
                       TextButton(
                         onPressed: () {
-                          // Navigate to the login page using the route
                           context.go('/login');
                         },
                         child: Text('Have an account? Login here'),

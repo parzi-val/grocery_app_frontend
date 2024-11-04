@@ -25,23 +25,20 @@ class AdminProductPageState extends State<AdminProductPage> {
   @override
   void initState() {
     super.initState();
-    _fetchProducts(); // Initial fetch of products
-    _fetchCategories(); // Fetch categories for dropdown
+    _fetchProducts();
+    _fetchCategories();
   }
 
   Future<void> _fetchCategories() async {
     try {
       final response = await http.get(
-        Uri.parse(
-            'http://localhost:5000/api/products/categories/'), // Replace with your API URL
+        Uri.parse('http://localhost:5000/api/products/categories/'),
         headers: {
-          'Authorization':
-              'Bearer ${await Auth.getUser()}', // Include token if required
+          'Authorization': 'Bearer ${await Auth.getUser()}',
         },
       );
 
       if (response.statusCode == 200) {
-        // Assuming the response body is a JSON array of category names
         List<dynamic> categoryList = json.decode(response.body);
 
         setState(() {
@@ -52,7 +49,6 @@ class AdminProductPageState extends State<AdminProductPage> {
       }
     } catch (error) {
       print('Error fetching categories: $error');
-      // Optionally, show an error message to the user or handle it appropriately
     }
   }
 
@@ -104,7 +100,6 @@ class AdminProductPageState extends State<AdminProductPage> {
     final imageUrlController = TextEditingController();
     final stockController = TextEditingController();
 
-    // Temporary list of categories (this should come from your backend)
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -140,7 +135,6 @@ class AdminProductPageState extends State<AdminProductPage> {
                   Padding(
                     padding: EdgeInsets.all(8.0),
                   ),
-                  // Category dropdown with search and add functionality
                   DropdownSearch<String>(
                     key: dropDownKey,
                     items: categories,
@@ -182,12 +176,11 @@ class AdminProductPageState extends State<AdminProductPage> {
                     'description': descriptionController.text,
                     'price': double.tryParse(priceController.text),
                     'imageUrl': imageUrlController.text,
-                    'category': dropDownKey
-                        .currentState?.getSelectedItem, // Set selected category
+                    'category': dropDownKey.currentState?.getSelectedItem,
                   }),
                 );
                 Navigator.of(context).pop();
-                _fetchProducts(); // Refresh the product list
+                _fetchProducts();
               },
               child: Text('Add'),
             ),
@@ -236,7 +229,7 @@ class AdminProductPageState extends State<AdminProductPage> {
                       suffixIcon: IconButton(
                         icon: Icon(Icons.search),
                         onPressed: () {
-                          refresh(); // Call refresh to fetch products based on the search query
+                          refresh();
                         },
                       ),
                     ),
@@ -246,7 +239,7 @@ class AdminProductPageState extends State<AdminProductPage> {
                 IconButton(
                   icon: Icon(Icons.filter_list),
                   onPressed: () {
-                    _showFilterDialog(); // Show filter dialog
+                    _showFilterDialog();
                   },
                 ),
               ],
@@ -279,7 +272,6 @@ class AdminProductPageState extends State<AdminProductPage> {
   }
 
   void _showFilterDialog() {
-    // Create text controllers for the price fields
     final minPriceController = TextEditingController(
         text: minPrice != null ? minPrice.toString() : '');
     final maxPriceController = TextEditingController(
@@ -313,7 +305,7 @@ class AdminProductPageState extends State<AdminProductPage> {
                   ),
                 ),
                 TextField(
-                  controller: minPriceController, // Use the controller here
+                  controller: minPriceController,
                   decoration: InputDecoration(labelText: 'Min Price'),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
@@ -321,7 +313,7 @@ class AdminProductPageState extends State<AdminProductPage> {
                   },
                 ),
                 TextField(
-                  controller: maxPriceController, // Use the controller here
+                  controller: maxPriceController,
                   decoration: InputDecoration(labelText: 'Max Price'),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
@@ -335,29 +327,27 @@ class AdminProductPageState extends State<AdminProductPage> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  // Get selected categories and apply filters
                   selectedCategories =
                       multiDropDownKey.currentState?.getSelectedItems;
                 });
                 Navigator.of(context).pop();
-                refresh(); // Refresh products with the selected filters
+                refresh();
               },
               child: Text('Apply Filters'),
             ),
             TextButton(
               onPressed: () {
-                // Clear the filters
                 setState(() {
-                  selectedCategories = []; // Clear selected categories
-                  minPrice = null; // Clear min price
-                  maxPrice = null; // Clear max price
-                  minPriceController.clear(); // Clear the text field
-                  maxPriceController.clear(); // Clear the text field
-                  // Reset the dropdown selection in the filter dialog
+                  selectedCategories = [];
+                  minPrice = null;
+                  maxPrice = null;
+                  minPriceController.clear();
+                  maxPriceController.clear();
+
                   multiDropDownKey.currentState?.clear();
                 });
                 Navigator.of(context).pop();
-                refresh(); // Refresh products without filters
+                refresh();
               },
               child: Text('Clear Filters'),
             ),

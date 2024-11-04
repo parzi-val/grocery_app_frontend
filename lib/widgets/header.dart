@@ -5,13 +5,13 @@ import 'package:go_router/go_router.dart';
 class Header extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
-  final Widget? leading; // New parameter for custom leading action
+  final Widget? leading;
 
   const Header({
     super.key,
     required this.title,
     required this.actions,
-    this.leading, // Accept the custom leading widget
+    this.leading,
   });
 
   @override
@@ -23,7 +23,7 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
 
 class HeaderState extends State<Header> {
   bool isLoggedIn = false;
-  bool isCustomLeading = false; // New variable to check for custom leading
+  bool isCustomLeading = false;
   bool admin = false;
 
   @override
@@ -31,26 +31,23 @@ class HeaderState extends State<Header> {
     super.initState();
     _checkLoginStatus();
     _checkAdminStatus();
-    // Use the correct syntax for conditional assignment
+
     isCustomLeading = widget.leading != null;
   }
 
-  // Method to check if a JWT exists in local storage
   Future<void> _checkLoginStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? jwt =
-        prefs.getString('jwt'); // Assuming you store JWT with key 'jwt'
+    final String? jwt = prefs.getString('jwt');
     setState(() {
-      isLoggedIn = jwt != null; // Set login status based on JWT presence
+      isLoggedIn = jwt != null;
     });
   }
 
-  // Method to check admin status from local storage
   Future<void> _checkAdminStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? role = prefs.getString('role'); // Read the role as a string
+    final String? role = prefs.getString('role');
     setState(() {
-      admin = role == 'admin'; // Check if the role is 'admin'
+      admin = role == 'admin';
     });
   }
 
@@ -59,9 +56,8 @@ class HeaderState extends State<Header> {
     return AppBar(
       title: Text(widget.title),
       elevation: 0,
-      backgroundColor:
-          const Color.fromRGBO(0, 106, 103, 1), // Change to a shade of green
-      foregroundColor: Colors.white, // Set foreground color for contrast
+      backgroundColor: const Color.fromRGBO(0, 106, 103, 1),
+      foregroundColor: Colors.white,
       leading: widget.leading ??
           IconButton(
             icon:
@@ -78,38 +74,36 @@ class HeaderState extends State<Header> {
         ...widget.actions!,
         isCustomLeading
             ? IconButton(
-                icon: Icon(Icons.apps, size: 30), // Additional action icon
+                icon: Icon(Icons.apps, size: 30),
                 onPressed: () {
                   context.go('/');
-                  // Navigate to the product page
                 },
               )
             : Container(),
         IconButton(
-          icon: Icon(Icons.shopping_cart, size: 30), // Cart icon
+          icon: Icon(Icons.shopping_cart, size: 30),
           onPressed: () {
-            context.go('/cart'); // Navigate to the cart page
+            context.go('/cart');
           },
         ),
         isLoggedIn
             ? TextButton(
                 onPressed: () {
-                  context.go('/profile'); // Navigate to the profile page
+                  context.go('/profile');
                 },
                 child: Icon(
-                  Icons.account_circle, // Profile icon
+                  Icons.account_circle,
                   size: 30,
-                  color: Colors.white, // Change icon color for contrast
+                  color: Colors.white,
                 ),
               )
             : TextButton(
                 onPressed: () {
-                  context.go('/login'); // Navigate to the login page
+                  context.go('/login');
                 },
                 child: Text(
                   'Login',
-                  style: TextStyle(
-                      color: Colors.white), // Change text color for contrast
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
       ],

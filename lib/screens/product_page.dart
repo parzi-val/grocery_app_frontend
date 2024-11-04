@@ -1,5 +1,3 @@
-// lib/screens/product_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:grocery_frontend/widgets/header.dart';
 

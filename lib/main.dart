@@ -6,7 +6,7 @@ import 'screens/auth/profile_page.dart';
 import 'screens/product_page.dart';
 import 'screens/cart_page.dart';
 import 'screens/admin/admin_dashboard.dart';
-import 'utils/not_found_page.dart'; // Create a NotFoundPage
+import 'utils/not_found_page.dart';
 import 'widgets/product.dart';
 import 'utils/auth.dart';
 
@@ -30,16 +30,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-bool isAuthenticated() {
-  // Replace this with your actual authentication check
-  return false; // Assume false for simplicity
-}
-
-bool isAdmin() {
-  // Replace this with your actual admin check
-  return false; // Assume false for simplicity
-}
-
 final GoRouter _router = GoRouter(
   redirect: (context, state) async {
     final isLoggedIn = await Auth.isAuthenticated();
@@ -49,14 +39,14 @@ final GoRouter _router = GoRouter(
     final isGoingToAdminRoute = state.matchedLocation == '/admin/dashboard';
 
     if (!isLoggedIn && isGoingToProtectedRoute) {
-      return '/login'; // Redirect to login if trying to access a protected route without authentication
+      return '/login';
     }
 
     if (isGoingToAdminRoute && !isAdmin) {
-      return '/404'; // Redirect to 404 if not an admin
+      return '/404';
     }
 
-    return null; // No redirection
+    return null;
   },
   routes: [
     GoRoute(
@@ -89,7 +79,7 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
       path: '/404',
-      builder: (context, state) => const NotFoundPage(), // 404 Page
+      builder: (context, state) => const NotFoundPage(),
     ),
   ],
 );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // Import GoRouter for navigation
+import 'package:go_router/go_router.dart';
 
 class NotFoundPage extends StatelessWidget {
   const NotFoundPage({super.key});
@@ -17,12 +17,10 @@ class NotFoundPage extends StatelessWidget {
               style: TextStyle(fontSize: 24),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20), // Add some spacing
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to the home page using GoRouter
-                context.go(
-                    '/'); // Assuming your home page is set at the root route
+                context.go('/');
               },
               child: const Text('Go to Home'),
             ),

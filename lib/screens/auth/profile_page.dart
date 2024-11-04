@@ -37,8 +37,7 @@ class ProfilePageState extends State<ProfilePage> {
 
     if (token != null) {
       final userResponse = await http.get(
-        Uri.parse(
-            'http://localhost:5000/api/auth/profile'), // Update with your user info API endpoint
+        Uri.parse('http://localhost:5000/api/auth/profile'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -51,7 +50,6 @@ class ProfilePageState extends State<ProfilePage> {
           isLoading = false;
         });
 
-        // Initialize the controllers with user info
         _nameController.text = userInfo?['name'] ?? '';
         _emailController.text = userInfo?['email'] ?? '';
         _streetController.text = userInfo?['address']?['street'] ?? '';
@@ -79,39 +77,35 @@ class ProfilePageState extends State<ProfilePage> {
       builder: (context) {
         return Dialog(
           child: SizedBox(
-            width: 400, // Set the desired width for the dialog here
+            width: 400,
             child: AlertDialog(
               title: Text('Edit Profile'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Each TextField wrapped in a SizedBox for consistent width
                     SizedBox(
-                      width:
-                          350, // Set the desired width for the TextFields here
+                      width: 350,
                       child: TextField(
                         controller: _nameController,
                         decoration: InputDecoration(labelText: 'Name'),
                       ),
                     ),
                     SizedBox(
-                      width:
-                          350, // Set the desired width for the TextFields here
+                      width: 350,
                       child: TextField(
                         controller: _emailController,
                         decoration: InputDecoration(labelText: 'Email'),
                       ),
                     ),
                     SizedBox(
-                      width:
-                          350, // Set the desired width for the TextFields here
+                      width: 350,
                       child: TextField(
                         controller: _pnoController,
                         decoration: InputDecoration(labelText: 'Phone Number'),
                       ),
                     ),
-                    SizedBox(height: 10), // Spacing between fields
+                    SizedBox(height: 10),
                     SizedBox(
                       width: 350,
                       child: TextField(
@@ -157,7 +151,6 @@ class ProfilePageState extends State<ProfilePage> {
               actions: [
                 ElevatedButton(
                   onPressed: () async {
-                    // Collect data from text controllers
                     final name = _nameController.text;
                     final email = _emailController.text;
                     final street = _streetController.text;
@@ -167,7 +160,6 @@ class ProfilePageState extends State<ProfilePage> {
                     final country = _countryController.text;
                     final phoneNumber = _pnoController.text;
 
-                    // Create a JSON object with the collected data
                     final Map<String, dynamic> userData = {
                       'name': name,
                       'email': email,
@@ -182,33 +174,27 @@ class ProfilePageState extends State<ProfilePage> {
                     };
 
                     try {
-                      // Make the PUT request
                       final response = await http.put(
-                        Uri.parse(
-                            'http://localhost:5000/api/auth/profile'), // Update with your actual endpoint
+                        Uri.parse('http://localhost:5000/api/auth/profile'),
                         headers: {
                           'Content-Type': 'application/json',
-                          // Add any necessary authentication headers here
                           'Authorization': 'Bearer $token',
                         },
                         body: json.encode(userData),
                       );
 
                       if (response.statusCode == 200) {
-                        // Handle success response
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content: Text('Profile updated successfully!')),
                         );
                         context.go('/profile');
                       } else {
-                        // Handle error response
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Failed to update profile!')),
                         );
                       }
                     } catch (error) {
-                      // Handle exceptions
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('An error occurred: $error')),
                       );
@@ -218,7 +204,7 @@ class ProfilePageState extends State<ProfilePage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close the dialog
+                    Navigator.pop(context);
                   },
                   child: Text('Cancel'),
                 ),
@@ -237,18 +223,16 @@ class ProfilePageState extends State<ProfilePage> {
         title: 'Profile',
         actions: [
           IconButton(
-              icon: Icon(Icons.logout), // Logout icon
+              icon: Icon(Icons.logout),
               onPressed: () {
                 Auth.logout(context);
                 context.go('/');
-              } // Call the logout method
-              ),
+              }),
         ],
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              // Wrap this with SingleChildScrollView
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(

@@ -8,11 +8,9 @@ class IndiProductPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Retrieve product ID passed as an argument
     final Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     final String productId = arguments['id'];
 
-    // Function to fetch product details from API
     Future<Map<String, dynamic>> fetchProductDetails(String id) async {
       final response =
           await http.get(Uri.parse('http://localhost:5000/api/products/$id'));
@@ -36,18 +34,15 @@ class IndiProductPage extends StatelessWidget {
           } else if (!snapshot.hasData) {
             return Center(child: Text("No data found"));
           } else {
-            // Data received successfully
             final product = snapshot.data!;
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Main Row containing Image and Product Details
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Product Image
                       SizedBox(
                         width: 400,
                         height: 400,
@@ -60,8 +55,6 @@ class IndiProductPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 20),
-
-                      // Product Info
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +83,6 @@ class IndiProductPage extends StatelessWidget {
                                   fontSize: 16, color: Colors.grey[700]),
                             ),
                             SizedBox(height: 20),
-                            // Product Description
                             SizedBox(height: 20),
                             Text(
                               "Description",
@@ -105,9 +97,7 @@ class IndiProductPage extends StatelessWidget {
                             ),
                             SizedBox(height: 30),
                             ElevatedButton(
-                              onPressed: () {
-                                // Add to Cart functionality here
-                              },
+                              onPressed: () {},
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 30, vertical: 15),
@@ -120,8 +110,6 @@ class IndiProductPage extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  // Add to Cart Button
                 ],
               ),
             );
