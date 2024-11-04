@@ -4,6 +4,7 @@ import 'package:grocery_frontend/screens/admin/products_page.dart';
 import 'package:grocery_frontend/screens/admin/orders_page.dart';
 import 'package:grocery_frontend/screens/admin/delivery_page.dart';
 import 'package:grocery_frontend/widgets/header.dart'; // Import your Header widget
+import 'package:grocery_frontend/globals.dart' as globals;
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -18,7 +19,7 @@ class AdminDashboardState extends State<AdminDashboard> {
   // Screens for each section
   final List<Widget> _pages = [
     MonitoringPage(),
-    AdminProductPage(),
+    AdminProductPage(key: globals.adminProductPageKey),
     OrdersPage(),
     DeliveryPage(),
   ];
