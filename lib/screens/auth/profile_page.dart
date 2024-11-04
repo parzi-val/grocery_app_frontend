@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_frontend/widgets/header.dart';
+import 'package:grocery_frontend/utils/auth.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -31,8 +33,7 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _fetchUserInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('jwt');
+    String? token = await Auth.getUser();
 
     if (token != null) {
       final userResponse = await http.get(
@@ -199,7 +200,7 @@ class ProfilePageState extends State<ProfilePage> {
                           SnackBar(
                               content: Text('Profile updated successfully!')),
                         );
-                        Navigator.pushNamed(context, '/profile');
+                        context.go('/profile');
                       } else {
                         // Handle error response
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -229,13 +230,6 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> _logout() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('jwt'); // Clear the JWT token
-    await prefs.remove('role'); // Clear the role
-    Navigator.pushReplacementNamed(context, '/'); // Navigate to the home page
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,9 +237,12 @@ class ProfilePageState extends State<ProfilePage> {
         title: 'Profile',
         actions: [
           IconButton(
-            icon: Icon(Icons.logout), // Logout icon
-            onPressed: _logout, // Call the logout method
-          ),
+              icon: Icon(Icons.logout), // Logout icon
+              onPressed: () {
+                Auth.logout(context);
+                context.go('/');
+              } // Call the logout method
+              ),
         ],
       ),
       body: isLoading

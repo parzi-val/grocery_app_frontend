@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_frontend/widgets/header.dart'; // Adjust the path based on your project structure
+import 'package:go_router/go_router.dart';
+import 'package:grocery_frontend/utils/auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,49 +13,6 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  dynamic roleInfo;
-
-  Future<void> _login() async {
-    final response = await http.post(
-      Uri.parse(
-          'http://localhost:5000/api/auth/login'), // Update with your API endpoint
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'email': _emailController.text,
-        'password': _passwordController.text,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final token = data['token'];
-
-      final roleResponse = await http
-          .get(Uri.parse('http://localhost:5000/api/auth/role'), headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      });
-
-      if (roleResponse.statusCode == 200) {
-        roleInfo = json.decode(roleResponse.body)['userType'];
-        final userType = roleInfo?.toString() ?? "customer";
-        // Store JWT in local storage
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt', token);
-        await prefs.setString('role', userType);
-      }
-      if (roleInfo == 'admin') {
-        Navigator.pushNamed(context, '/admin/dashboard');
-      } else {
-        Navigator.pushNamed(context, '/');
-      }
-    } else {
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed!')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +21,8 @@ class LoginPageState extends State<LoginPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: SizedBox(
-            width: 300, // Set a fixed width for the login form
+            width: 400,
+            height: 280,
             child: Card(
               elevation: 8,
               shape: RoundedRectangleBorder(
@@ -92,13 +49,24 @@ class LoginPageState extends State<LoginPage> {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 40),
                     ElevatedButton(
-                      onPressed: _login,
+                      onPressed: () {
+                        Auth.login(context, _emailController.text,
+                            _passwordController.text);
+                      },
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(double.infinity, 40),
                       ),
                       child: Text('Login'),
+                    ),
+                    SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to the registration page using the route
+                        context.go('/register');
+                      },
+                      child: Text('Don\'t have an account? Register here'),
                     ),
                   ],
                 ),
@@ -108,7 +76,7 @@ class LoginPageState extends State<LoginPage> {
         ),
       ),
       appBar: Header(
-        title: 'Login', // You can set the title for the header
+        title: 'Login',
         actions: [
           IconButton(
             icon: Icon(Icons.help),

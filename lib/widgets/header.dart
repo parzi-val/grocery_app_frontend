@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:go_router/go_router.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -67,9 +68,9 @@ class HeaderState extends State<Header> {
                 Icon(admin ? Icons.admin_panel_settings : Icons.home, size: 30),
             onPressed: () {
               if (admin) {
-                Navigator.pushNamed(context, '/admin/dashboard');
+                context.go('/admin/dashboard');
               } else {
-                Navigator.pushNamed(context, '/');
+                context.go('/');
               }
             },
           ),
@@ -79,22 +80,21 @@ class HeaderState extends State<Header> {
             ? IconButton(
                 icon: Icon(Icons.apps, size: 30), // Additional action icon
                 onPressed: () {
-                  Navigator.pushNamed(
-                      context, '/'); // Navigate to the product page
+                  context.go('/');
+                  // Navigate to the product page
                 },
               )
             : Container(),
         IconButton(
           icon: Icon(Icons.shopping_cart, size: 30), // Cart icon
           onPressed: () {
-            Navigator.pushNamed(context, '/cart'); // Navigate to the cart page
+            context.go('/cart'); // Navigate to the cart page
           },
         ),
         isLoggedIn
             ? TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(
-                      context, '/profile'); // Navigate to the profile page
+                  context.go('/profile'); // Navigate to the profile page
                 },
                 child: Icon(
                   Icons.account_circle, // Profile icon
@@ -104,8 +104,7 @@ class HeaderState extends State<Header> {
               )
             : TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(
-                      context, '/login'); // Navigate to the login page
+                  context.go('/login'); // Navigate to the login page
                 },
                 child: Text(
                   'Login',
