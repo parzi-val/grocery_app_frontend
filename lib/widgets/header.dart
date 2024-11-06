@@ -76,20 +76,20 @@ class HeaderState extends State<Header> {
             ? IconButton(
                 icon: Icon(Icons.apps, size: 30),
                 onPressed: () {
-                  context.go('/');
+                  context.push('/');
                 },
               )
             : Container(),
         IconButton(
           icon: Icon(Icons.shopping_cart, size: 30),
           onPressed: () {
-            context.go('/cart');
+            context.push('/cart');
           },
         ),
         isLoggedIn
             ? TextButton(
                 onPressed: () {
-                  context.go('/profile');
+                  context.push('/profile');
                 },
                 child: Icon(
                   Icons.account_circle,
@@ -99,7 +99,7 @@ class HeaderState extends State<Header> {
               )
             : TextButton(
                 onPressed: () {
-                  context.go('/login');
+                  context.push('/login');
                 },
                 child: Text(
                   'Login',

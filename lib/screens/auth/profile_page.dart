@@ -226,7 +226,7 @@ class ProfilePageState extends State<ProfilePage> {
               icon: Icon(Icons.logout),
               onPressed: () {
                 Auth.logout(context);
-                context.go('/');
+                context.push('/');
               }),
         ],
       ),

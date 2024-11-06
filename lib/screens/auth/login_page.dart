@@ -63,7 +63,7 @@ class LoginPageState extends State<LoginPage> {
                     SizedBox(height: 10),
                     TextButton(
                       onPressed: () {
-                        context.go('/register');
+                        context.push('/register');
                       },
                       child: Text('Don\'t have an account? Register here'),
                     ),

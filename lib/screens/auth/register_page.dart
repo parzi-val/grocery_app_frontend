@@ -163,7 +163,7 @@ class RegisterPageState extends State<RegisterPage> {
                       SizedBox(height: 10),
                       TextButton(
                         onPressed: () {
-                          context.go('/login');
+                          context.push('/login');
                         },
                         child: Text('Have an account? Login here'),
                       ),
