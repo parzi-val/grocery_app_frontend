@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:grocery_frontend/widgets/product_card.dart';
 import 'package:grocery_frontend/utils/auth.dart';
+import 'package:grocery_frontend/utils/log_service.dart';
 
 class AdminProductPage extends StatefulWidget {
   const AdminProductPage({super.key});
@@ -48,7 +49,7 @@ class AdminProductPageState extends State<AdminProductPage> {
         throw Exception('Failed to load categories');
       }
     } catch (error) {
-      print('Error fetching categories: $error');
+      LogService.e('Error fetching categories: $error');
     }
   }
 

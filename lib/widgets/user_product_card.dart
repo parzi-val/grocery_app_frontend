@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:grocery_frontend/utils/auth.dart';
+import 'package:go_router/go_router.dart';
+import 'dart:convert';
+import 'package:grocery_frontend/utils/log_service.dart';
 
 class ProductCard extends StatefulWidget {
   final dynamic product;
@@ -16,6 +21,36 @@ class ProductCardState extends State<ProductCard> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<void> addToCart(String productId, int quantity) async {
+    final userId = await Auth.getUser();
+    if (userId == null) {
+      context.go('/login');
+    }
+    final url = Uri.parse('http://localhost:5000/api/cart/add');
+
+    final body = jsonEncode({
+      'productId': productId,
+      'userId': userId,
+      'quantity': quantity,
+    });
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await Auth.getUser()}',
+    };
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        LogService.i('Cart updated successfully');
+      } else {
+        LogService.w('Failed to update cart: ${response.body}');
+      }
+    } catch (e) {
+      LogService.e('Error updating cart: $e');
+    }
   }
 
   @override
@@ -70,7 +105,9 @@ class ProductCardState extends State<ProductCard> {
               children: [
                 TextButton(
                   child: Text('Add to Cart'),
-                  onPressed: () => {},
+                  onPressed: () => {
+                    addToCart(product['_id'], 1),
+                  },
                 ),
               ],
             ),

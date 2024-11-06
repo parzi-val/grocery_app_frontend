@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_frontend/widgets/header.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:grocery_frontend/widgets/user_product_card.dart';
 import 'package:grocery_frontend/utils/auth.dart';
+import 'package:grocery_frontend/utils/log_service.dart';
+import 'dart:convert';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -48,7 +49,7 @@ class ProductPageState extends State<ProductPage> {
         throw Exception('Failed to load categories');
       }
     } catch (error) {
-      print('Error fetching categories: $error');
+      LogService.e('Error fetching categories: $error');
     }
   }
 
