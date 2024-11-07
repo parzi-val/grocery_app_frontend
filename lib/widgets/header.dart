@@ -51,6 +51,11 @@ class HeaderState extends State<Header> {
     });
   }
 
+  Future<void> refresh() async {
+    await _checkLoginStatus();
+    await _checkAdminStatus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBar(

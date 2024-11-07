@@ -6,6 +6,7 @@ import 'screens/auth/profile_page.dart';
 import 'screens/product_page.dart';
 import 'screens/cart_page.dart';
 import 'screens/admin/admin_dashboard.dart';
+import 'screens/order_details_page.dart';
 import 'utils/not_found_page.dart';
 import 'widgets/product.dart';
 import 'utils/auth.dart';
@@ -34,9 +35,9 @@ final GoRouter _router = GoRouter(
   redirect: (context, state) async {
     final isLoggedIn = await Auth.isAuthenticated();
     final isAdmin = await Auth.isAdmin();
-    final isGoingToProtectedRoute = state.matchedLocation == '/profile' ||
-        state.matchedLocation == '/admin/dashboard';
-    final isGoingToAdminRoute = state.matchedLocation == '/admin/dashboard';
+    final isGoingToProtectedRoute =
+        state.subloc == '/profile' || state.subloc == '/admin/dashboard';
+    final isGoingToAdminRoute = state.subloc == '/admin/dashboard';
 
     if (!isLoggedIn && isGoingToProtectedRoute) {
       return '/login';
@@ -74,12 +75,22 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const AdminDashboard(),
     ),
     GoRoute(
-      path: '/product',
-      builder: (context, state) => IndiProductPage(),
+      path: '/products/:productId',
+      builder: (context, state) {
+        final productId = state.params['productId']!;
+        return IndiProductPage(productId: productId);
+      },
     ),
     GoRoute(
       path: '/404',
       builder: (context, state) => const NotFoundPage(),
+    ),
+    GoRoute(
+      path: '/order/:orderId',
+      builder: (context, state) {
+        final orderId = state.params['orderId']!;
+        return OrderDetailsPage(orderId: orderId);
+      },
     ),
   ],
 );

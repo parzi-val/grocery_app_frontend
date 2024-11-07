@@ -41,6 +41,11 @@ class Auth {
       } else {
         context.go('/');
       }
+    } else if (response.statusCode == 403) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Session expired!')),
+      );
+      context.go('/login');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed!')),

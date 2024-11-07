@@ -2,15 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:grocery_frontend/widgets/header.dart';
+import 'package:go_router/go_router.dart';
+import 'package:grocery_frontend/utils/auth.dart';
+import 'package:grocery_frontend/utils/log_service.dart';
 
 class IndiProductPage extends StatelessWidget {
-  const IndiProductPage({super.key});
+  final String productId;
+  const IndiProductPage({required this.productId, super.key});
+
+  Future<void> addToCart(BuildContext context, productId, int quantity) async {
+    final userId = await Auth.getUser();
+    if (userId == null) {
+      context.go('/login');
+    }
+    final url = Uri.parse('http://localhost:5000/api/cart/add');
+
+    final body = jsonEncode({
+      'productId': productId,
+      'userId': userId,
+      'quantity': quantity,
+    });
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await Auth.getUser()}',
+    };
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        LogService.i('Cart updated successfully');
+      } else {
+        LogService.w('Failed to update cart: ${response.body}');
+      }
+    } catch (e) {
+      LogService.e('Error updating cart: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    final String productId = arguments['id'];
-
     Future<Map<String, dynamic>> fetchProductDetails(String id) async {
       final response =
           await http.get(Uri.parse('http://localhost:5000/api/products/$id'));
@@ -97,7 +127,9 @@ class IndiProductPage extends StatelessWidget {
                             ),
                             SizedBox(height: 30),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                addToCart(context, productId, 1);
+                              },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 30, vertical: 15),

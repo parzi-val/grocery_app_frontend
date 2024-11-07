@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_frontend/utils/log_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,7 @@ class ProfilePage extends StatefulWidget {
 
 class ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic>? userInfo;
+  List<dynamic> orderHistory = [];
   bool isLoading = true;
 
   final _nameController = TextEditingController();
@@ -30,6 +32,7 @@ class ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _fetchUserInfo();
+    fetchOrderHistory();
   }
 
   Future<void> _fetchUserInfo() async {
@@ -66,6 +69,35 @@ class ProfilePageState extends State<ProfilePage> {
           isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> fetchOrderHistory() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:5000/api/orders/history'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await Auth.getUser()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          orderHistory = json.decode(response.body);
+          isLoading = false;
+        });
+      } else {
+        // Handle error
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (error) {
+      LogService.e('Error fetching order history: $error');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -233,58 +265,136 @@ class ProfilePageState extends State<ProfilePage> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 8.0,
-                        spreadRadius: 1.0,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Personal Information',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: _showEditModal,
+              child: Column(
+                children: [
+                  // Profile Information Section
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 8.0,
+                            spreadRadius: 1.0,
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
-                      if (userInfo != null) ...[
-                        Text('Name: ${userInfo!['name']}'),
-                        SizedBox(height: 5),
-                        Text('Email: ${userInfo!['email']}'),
-                        SizedBox(height: 5),
-                        Text(
-                            'Phone Number: ${userInfo!['phoneNumber']?.isNotEmpty == true ? userInfo!['phoneNumber'] : 'not set'}'),
-                        SizedBox(height: 10),
-                        Text('Address:'),
-                        Text('${userInfo?['address']?['street'] ?? ''}'),
-                        Text(
-                            '${userInfo?['address']?['city'] ?? ''} ${userInfo?['address']?['state'] ?? ''} ${userInfo?['address']?['postalCode'] ?? ''}'),
-                        Text(
-                            '${userInfo?['address']?['country'] ?? 'not available'}'),
-                      ] else
-                        Text('User information not available.'),
-                    ],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Personal Information',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: _showEditModal,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          if (userInfo != null) ...[
+                            Text('Name: ${userInfo!['name']}'),
+                            SizedBox(height: 5),
+                            Text('Email: ${userInfo!['email']}'),
+                            SizedBox(height: 5),
+                            Text(
+                                'Phone Number: ${userInfo!['phoneNumber']?.isNotEmpty == true ? userInfo!['phoneNumber'] : 'not set'}'),
+                            SizedBox(height: 10),
+                            Text('Address:'),
+                            Text('${userInfo?['address']?['street'] ?? ''}'),
+                            Text(
+                                '${userInfo?['address']?['city'] ?? ''} ${userInfo?['address']?['state'] ?? ''} ${userInfo?['address']?['postalCode'] ?? ''}'),
+                            Text(
+                                '${userInfo?['address']?['country'] ?? 'not available'}'),
+                          ] else
+                            Text('User information not available.'),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  Divider(),
+                  // Order History Section
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Order History",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 10),
+                        if (orderHistory.isNotEmpty) ...[
+                          ListView.builder(
+                            shrinkWrap:
+                                true, // To prevent ListView from taking too much space in Column
+                            physics:
+                                NeverScrollableScrollPhysics(), // Disable scrolling for the ListView itself
+                            itemCount: orderHistory.length,
+                            itemBuilder: (context, index) {
+                              final order = orderHistory[index];
+                              return InkWell(
+                                onTap: () {
+                                  context.go('/order/${order['orderId']}');
+                                },
+                                child: Card(
+                                  margin: EdgeInsets.all(8),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Order #${order['orderId']}",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold)),
+                                        Text("Status: ${order['status']}"),
+                                        Text(
+                                            "Total Amount: \$${order['totalAmount']}"),
+                                        Text(
+                                            "Order Date: ${order['createdAt']}"),
+                                        Divider(),
+                                        Text("Items:",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        ...order['items'].map<Widget>((item) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 4.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                    "${item['product']} x${item['quantity']}"),
+                                                Text("\$${item['total']}"),
+                                              ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ] else
+                          Text("No order history available."),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
     );

@@ -5,6 +5,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:grocery_frontend/widgets/user_product_card.dart';
 import 'package:grocery_frontend/utils/auth.dart';
 import 'package:grocery_frontend/utils/log_service.dart';
+import 'package:grocery_frontend/globals.dart';
 import 'dart:convert';
 
 class ProductPage extends StatefulWidget {
@@ -28,6 +29,7 @@ class ProductPageState extends State<ProductPage> {
     super.initState();
     _fetchProducts();
     _fetchCategories();
+    headerKey.currentState?.refresh();
   }
 
   Future<void> _fetchCategories() async {
@@ -101,6 +103,7 @@ class ProductPageState extends State<ProductPage> {
 
     return Scaffold(
       appBar: Header(
+        key: headerKey,
         title: 'Products',
         actions: [],
       ),

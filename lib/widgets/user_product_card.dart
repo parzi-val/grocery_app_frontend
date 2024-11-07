@@ -59,6 +59,7 @@ class ProductCardState extends State<ProductCard> {
 
     return InkWell(
       onTap: () {
+        context.go('/products/${product['_id']}');
         Navigator.pushNamed(
           context,
           '/product',
