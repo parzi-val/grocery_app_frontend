@@ -6,6 +6,7 @@ import 'screens/auth/profile_page.dart';
 import 'screens/product_page.dart';
 import 'screens/cart_page.dart';
 import 'screens/admin/admin_dashboard.dart';
+import 'widgets/payment.dart';
 import 'screens/order_details_page.dart';
 import 'utils/not_found_page.dart';
 import 'widgets/product.dart';
@@ -90,6 +91,14 @@ final GoRouter _router = GoRouter(
       builder: (context, state) {
         final orderId = state.params['orderId']!;
         return OrderDetailsPage(orderId: orderId);
+      },
+    ),
+    GoRoute(
+      path: '/payment/:orderId',
+      builder: (context, state) {
+        // Extract orderId from the route parameters
+        final orderId = state.params['orderId']!;
+        return PaymentPage(orderId: orderId); // Pass orderId to PaymentPage
       },
     ),
   ],

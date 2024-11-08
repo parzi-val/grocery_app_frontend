@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:grocery_frontend/utils/auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:grocery_frontend/widgets/header.dart';
+import 'package:grocery_frontend/utils/log_service.dart';
 import 'dart:convert';
 
 class OrderDetailsPage extends StatefulWidget {
@@ -141,53 +142,66 @@ class OrderDetailsPageState extends State<OrderDetailsPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Order Details',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Order Details',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 10),
-                            Text('User: ${orderData!['user']['name']}'),
-                            Text('Email: ${orderData!['user']['email']}'),
-                            Text('Phone: ${orderData!['user']['phoneNumber']}'),
-                            SizedBox(height: 10),
-                            Text('Address:'),
-                            Text(
-                                '${orderData!['user']['address']?['street'] ?? ''}'),
-                            Text(
-                                '${orderData!['user']['address']?['city'] ?? ''} ${orderData!['user']['address']?['state'] ?? ''} ${orderData!['user']['address']?['postalCode'] ?? ''}'),
-                            Text(
-                                '${orderData!['user']['address']?['country'] ?? 'not available'}'),
-                            Divider(),
-                            Text(
-                              'Summary',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                              SizedBox(height: 10),
+                              Text('User: ${orderData!['user']['name']}'),
+                              Text('Email: ${orderData!['user']['email']}'),
+                              Text(
+                                  'Phone: ${orderData!['user']['phoneNumber']}'),
+                              SizedBox(height: 10),
+                              Text('Address:'),
+                              Text(
+                                  '${orderData!['user']['address']?['street'] ?? ''}'),
+                              Text(
+                                  '${orderData!['user']['address']?['city'] ?? ''} ${orderData!['user']['address']?['state'] ?? ''} ${orderData!['user']['address']?['postalCode'] ?? ''}'),
+                              Text(
+                                  '${orderData!['user']['address']?['country'] ?? 'not available'}'),
+                              Divider(),
+                              Text(
+                                'Summary',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                                'Total Amount: \$${orderData!['totalAmount']}'),
-                            Text('Status: ${orderData!['status']}'),
-                            Text(
-                              'Estimated Delivery: ${orderData!['estimatedDelivery']}',
-                            ),
-                            SizedBox(height: 40),
-                            Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  // Implement navigation to the payment page
-                                },
-                                child: Text('Proceed to Payment'),
+                              SizedBox(height: 10),
+                              Text(
+                                  'Total Amount: \$${orderData!['totalAmount']}'),
+                              Text('Status: ${orderData!['status']}'),
+                              Text(
+                                'Estimated Delivery: ${orderData!['estimatedDelivery']}',
                               ),
-                            ),
-                          ],
-                        ),
+                              SizedBox(height: 40),
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (orderData != null &&
+                                        orderData!['orderId'] != null) {
+                                      // Navigate to the payment page with the order ID
+                                      context.go(
+                                          '/payment/${orderData!['orderId']}');
+                                    } else {
+                                      LogService.e('Order ID is missing');
+                                    }
+                                  },
+                                  child: (orderData != null &&
+                                          orderData!['status'] ==
+                                              'Pending Payment')
+                                      ? Text('Proceed to Payment')
+                                      : SizedBox(
+                                          width:
+                                              10), // Placeholder widget when the button should not be shown
+                                ),
+                              ),
+                            ]),
                       ),
                     ),
                   ),
