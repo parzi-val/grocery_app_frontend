@@ -17,7 +17,7 @@ class AdminDashboardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    MonitoringPage(),
+    AnalyticsPage(),
     AdminProductPage(key: globals.adminProductPageKey),
     OrdersPage(),
     DeliveryPage(),

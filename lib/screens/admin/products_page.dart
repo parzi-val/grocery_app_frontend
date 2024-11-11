@@ -5,6 +5,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:grocery_frontend/widgets/product_card.dart';
 import 'package:grocery_frontend/utils/auth.dart';
 import 'package:grocery_frontend/utils/log_service.dart';
+import 'package:grocery_frontend/globals.dart' as globals;
 
 class AdminProductPage extends StatefulWidget {
   const AdminProductPage({super.key});
@@ -26,14 +27,14 @@ class AdminProductPageState extends State<AdminProductPage> {
   @override
   void initState() {
     super.initState();
-    _fetchProducts();
+    _fetchAllProducts();
     _fetchCategories();
   }
 
   Future<void> _fetchCategories() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/products/categories/'),
+        Uri.parse('${globals.url}/api/products/categories/'),
         headers: {
           'Authorization': 'Bearer ${await Auth.getUser()}',
         },
@@ -53,6 +54,17 @@ class AdminProductPageState extends State<AdminProductPage> {
     }
   }
 
+  Future<void> _fetchAllProducts() async {
+    final response = await http.get(Uri.parse('${globals.url}/api/products/'));
+    if (response.statusCode == 200) {
+      setState(() {
+        products = json.decode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
+
   Future<void> _fetchProducts(
       {String? name,
       List<dynamic>? categories,
@@ -60,7 +72,7 @@ class AdminProductPageState extends State<AdminProductPage> {
       double? maxPrice}) async {
     List<String>? categories =
         selectedCategories?.map((e) => e.toString()).toList();
-    StringBuffer query = StringBuffer('http://localhost:5000/api/products?');
+    StringBuffer query = StringBuffer('${globals.url}/api/products/search?');
 
     if (name != null && name.isNotEmpty) {
       query.write('name=$name&');
@@ -74,6 +86,12 @@ class AdminProductPageState extends State<AdminProductPage> {
     if (maxPrice != null) {
       query.write('maxPrice=$maxPrice&');
     }
+    setState(() {
+      searchQuery = '';
+      selectedCategories = [];
+      minPrice = null;
+      maxPrice = null;
+    });
 
     final response = await http.get(Uri.parse(query.toString()));
 
@@ -87,11 +105,7 @@ class AdminProductPageState extends State<AdminProductPage> {
   }
 
   Future<void> refresh() async {
-    await _fetchProducts(
-        name: searchQuery,
-        categories: selectedCategories,
-        minPrice: minPrice,
-        maxPrice: maxPrice);
+    await _fetchAllProducts();
   }
 
   void _showAddDialog() {
@@ -167,10 +181,10 @@ class AdminProductPageState extends State<AdminProductPage> {
             TextButton(
               onPressed: () async {
                 await http.post(
-                  Uri.parse('http://localhost:5000/api/products/'),
+                  Uri.parse('${globals.url}/api/products/'),
                   headers: {
                     "Content-Type": "application/json",
-                    'Authorization': 'Bearer ${Auth.getUser()}',
+                    'Authorization': 'Bearer ${await Auth.getUser()}',
                   },
                   body: json.encode({
                     'name': nameController.text,
@@ -178,10 +192,11 @@ class AdminProductPageState extends State<AdminProductPage> {
                     'price': double.tryParse(priceController.text),
                     'imageUrl': imageUrlController.text,
                     'category': dropDownKey.currentState?.getSelectedItem,
+                    'stock': double.tryParse(stockController.text),
                   }),
                 );
                 Navigator.of(context).pop();
-                _fetchProducts();
+                _fetchAllProducts();
               },
               child: Text('Add'),
             ),
@@ -225,12 +240,18 @@ class AdminProductPageState extends State<AdminProductPage> {
                         searchQuery = value;
                       });
                     },
+                    onSubmitted: (value) {
+                      _fetchProducts(
+                          name: value); // This will trigger on Enter key press
+                    },
                     decoration: InputDecoration(
                       labelText: 'Search Products',
                       suffixIcon: IconButton(
                         icon: Icon(Icons.search),
                         onPressed: () {
-                          refresh();
+                          _fetchProducts(
+                              name:
+                                  searchQuery); // This will trigger on search icon press
                         },
                       ),
                     ),
@@ -332,7 +353,10 @@ class AdminProductPageState extends State<AdminProductPage> {
                       multiDropDownKey.currentState?.getSelectedItems;
                 });
                 Navigator.of(context).pop();
-                refresh();
+                _fetchProducts(
+                    categories: selectedCategories,
+                    minPrice: double.tryParse(minPriceController.text),
+                    maxPrice: double.tryParse(maxPriceController.text));
               },
               child: Text('Apply Filters'),
             ),

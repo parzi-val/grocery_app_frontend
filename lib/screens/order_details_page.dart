@@ -4,6 +4,7 @@ import 'package:grocery_frontend/utils/auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:grocery_frontend/widgets/header.dart';
 import 'package:grocery_frontend/utils/log_service.dart';
+import 'package:grocery_frontend/globals.dart' as globals;
 import 'dart:convert';
 
 class OrderDetailsPage extends StatefulWidget {
@@ -27,7 +28,7 @@ class OrderDetailsPageState extends State<OrderDetailsPage> {
 
   Future<void> fetchOrderDetails() async {
     final response = await http.get(
-      Uri.parse('http://localhost:5000/api/orders/${widget.orderId}'),
+      Uri.parse('${globals.url}/api/orders/${widget.orderId}'),
       headers: {
         'Authorization':
             'Bearer ${await Auth.getUser()}', // Replace with actual JWT token
@@ -181,26 +182,37 @@ class OrderDetailsPageState extends State<OrderDetailsPage> {
                               ),
                               SizedBox(height: 40),
                               Center(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    if (orderData != null &&
-                                        orderData!['orderId'] != null) {
-                                      // Navigate to the payment page with the order ID
-                                      context.go(
-                                          '/payment/${orderData!['orderId']}');
-                                    } else {
-                                      LogService.e('Order ID is missing');
-                                    }
-                                  },
                                   child: (orderData != null &&
                                           orderData!['status'] ==
                                               'Pending Payment')
-                                      ? Text('Proceed to Payment')
-                                      : SizedBox(
-                                          width:
-                                              10), // Placeholder widget when the button should not be shown
-                                ),
-                              ),
+                                      ? ElevatedButton(
+                                          onPressed: () {
+                                            if (orderData != null &&
+                                                orderData!['orderId'] != null) {
+                                              // Navigate to the payment page with the order ID
+                                              context.go(
+                                                  '/payment/${orderData!['orderId']}');
+                                            } else {
+                                              LogService.e(
+                                                  'Order ID is missing');
+                                            }
+                                          },
+                                          child: Text('Proceed to Payment')
+                                          // Placeholder widget when the button should not be shown
+                                          )
+                                      : ElevatedButton(
+                                          onPressed: () {
+                                            if (orderData != null &&
+                                                orderData!['orderId'] != null) {
+                                              // Navigate to the payment page with the order ID
+                                              context.go(
+                                                  '/payment/${orderData!['orderId']}');
+                                            } else {
+                                              LogService.e(
+                                                  'Order ID is missing');
+                                            }
+                                          },
+                                          child: Text('Track Order')))
                             ]),
                       ),
                     ),

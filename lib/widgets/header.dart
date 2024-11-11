@@ -81,7 +81,7 @@ class HeaderState extends State<Header> {
             ? IconButton(
                 icon: Icon(Icons.apps, size: 30),
                 onPressed: () {
-                  context.push('/');
+                  context.go('/');
                 },
               )
             : Container(),

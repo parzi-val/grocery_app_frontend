@@ -4,6 +4,7 @@ import 'package:grocery_frontend/utils/auth.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:convert';
 import 'package:grocery_frontend/utils/log_service.dart';
+import 'package:grocery_frontend/globals.dart' as globals;
 
 class ProductCard extends StatefulWidget {
   final dynamic product;
@@ -28,7 +29,7 @@ class ProductCardState extends State<ProductCard> {
     if (userId == null) {
       context.go('/login');
     }
-    final url = Uri.parse('http://localhost:5000/api/cart/add');
+    final url = Uri.parse('${globals.url}/api/cart/add');
 
     final body = jsonEncode({
       'productId': productId,

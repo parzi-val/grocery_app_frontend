@@ -55,7 +55,7 @@ class ProductCardState extends State<ProductCard> {
             TextButton(
               onPressed: () async {
                 await http.put(
-                  Uri.parse('http://localhost:5000/api/products/$id'),
+                  Uri.parse('${globals.url}/api/products/$id'),
                   headers: {
                     "Content-Type": "application/json",
                     'Authorization': 'Bearer ${await Auth.getUser()}',
@@ -85,8 +85,7 @@ class ProductCardState extends State<ProductCard> {
   }
 
   Future<void> _fetchProducts() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:5000/api/products/'));
+    final response = await http.get(Uri.parse('${globals.url}/api/products/'));
     if (response.statusCode == 200) {
       setState(() {
         products = json.decode(response.body);
@@ -107,7 +106,7 @@ class ProductCardState extends State<ProductCard> {
             TextButton(
               onPressed: () async {
                 await http.delete(
-                    Uri.parse('http://localhost:5000/api/products/?id=$id'),
+                    Uri.parse('${globals.url}/api/products/?id=$id'),
                     headers: {
                       'Authorization': 'Bearer ${await Auth.getUser()}'
                     });

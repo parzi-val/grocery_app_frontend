@@ -119,23 +119,6 @@ class RegisterPageState extends State<RegisterPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 15),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Confirm Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
-                          }
-                          if (value != password) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                      ),
                       SizedBox(height: 20),
                       if (showPasswordStrength)
                         Text(

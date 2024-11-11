@@ -5,6 +5,7 @@ import 'package:grocery_frontend/widgets/header.dart';
 import 'package:go_router/go_router.dart';
 import 'package:grocery_frontend/utils/auth.dart';
 import 'package:grocery_frontend/utils/log_service.dart';
+import 'package:grocery_frontend/globals.dart' as globals;
 
 class IndiProductPage extends StatelessWidget {
   final String productId;
@@ -15,7 +16,7 @@ class IndiProductPage extends StatelessWidget {
     if (userId == null) {
       context.go('/login');
     }
-    final url = Uri.parse('http://localhost:5000/api/cart/add');
+    final url = Uri.parse('${globals.url}/api/cart/add');
 
     final body = jsonEncode({
       'productId': productId,
@@ -43,7 +44,7 @@ class IndiProductPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Future<Map<String, dynamic>> fetchProductDetails(String id) async {
       final response =
-          await http.get(Uri.parse('http://localhost:5000/api/products/$id'));
+          await http.get(Uri.parse('${globals.url}/api/products/$id'));
 
       if (response.statusCode == 200) {
         return json.decode(response.body);

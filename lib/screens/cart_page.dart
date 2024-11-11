@@ -4,6 +4,7 @@ import 'package:grocery_frontend/widgets/header.dart';
 import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
 import 'package:grocery_frontend/utils/log_service.dart';
+import 'package:grocery_frontend/globals.dart' as globals;
 import 'dart:convert';
 
 class CartPage extends StatefulWidget {
@@ -23,7 +24,7 @@ class CartPageState extends State<CartPage> {
   }
 
   Future<Map<String, dynamic>?> getCart() async {
-    final url = Uri.parse('http://localhost:5000/api/cart');
+    final url = Uri.parse('${globals.url}/api/cart');
 
     final headers = {
       'Authorization': 'Bearer ${await Auth.getUser()}',
@@ -43,7 +44,7 @@ class CartPageState extends State<CartPage> {
   }
 
   Future<void> removeFromCart(String productId) async {
-    final url = Uri.parse('http://localhost:5000/api/cart/$productId');
+    final url = Uri.parse('${globals.url}/api/cart/$productId');
 
     final headers = {
       'Authorization': 'Bearer ${await Auth.getUser()}',
@@ -63,7 +64,7 @@ class CartPageState extends State<CartPage> {
 
   Future<void> addToCart(String productId, int quantity) async {
     final userId = await Auth.getUser();
-    final url = Uri.parse('http://localhost:5000/api/cart/add');
+    final url = Uri.parse('${globals.url}/api/cart/add');
 
     final body = jsonEncode({
       'productId': productId,
@@ -99,7 +100,7 @@ class CartPageState extends State<CartPage> {
 
   Future<void> createOrder(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://localhost:5000/api/orders/checkout'),
+      Uri.parse('${globals.url}/api/orders/checkout'),
       headers: {
         'Authorization':
             'Bearer ${await Auth.getUser()}', // Replace with actual JWT token

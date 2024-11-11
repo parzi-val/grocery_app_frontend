@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
 import 'package:grocery_frontend/utils/auth.dart';
 import 'package:grocery_frontend/widgets/header.dart';
+import 'package:grocery_frontend/globals.dart' as globals;
 import 'dart:convert';
 
 class PaymentPage extends StatefulWidget {
@@ -27,7 +28,7 @@ class PaymentPageState extends State<PaymentPage> {
 
   Future<bool> confirmPayment() async {
     final url = Uri.parse(
-        'http://localhost:5000/api/payments/confirm-payment/${widget.orderId}');
+        '${globals.url}/api/payments/confirm-payment/${widget.orderId}');
 
     try {
       final response = await http.put(
@@ -60,7 +61,7 @@ class PaymentPageState extends State<PaymentPage> {
 
   Future<void> fetchOrderDetails() async {
     final response = await http.get(
-      Uri.parse('http://localhost:5000/api/orders/${widget.orderId}'),
+      Uri.parse('${globals.url}/api/orders/${widget.orderId}'),
       headers: {
         'Authorization':
             'Bearer ${await Auth.getUser()}', // Replace with actual JWT token

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:grocery_frontend/globals.dart' as globals;
 import 'dart:convert';
 
 class Auth {
@@ -10,7 +11,7 @@ class Auth {
   static Future<void> login(
       BuildContext context, String email, String password) async {
     final response = await http.post(
-      Uri.parse('http://localhost:5000/api/auth/login'),
+      Uri.parse('${globals.url}/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'email': email,
@@ -23,7 +24,7 @@ class Auth {
       final token = data['token'];
 
       final roleResponse = await http
-          .get(Uri.parse('http://localhost:5000/api/auth/role'), headers: {
+          .get(Uri.parse('${globals.url}/api/auth/role'), headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
       });
@@ -39,7 +40,7 @@ class Auth {
       if (roleInfo == 'admin') {
         context.go('/admin/dashboard');
       } else {
-        context.go('/');
+        context.pushReplacement('/');
       }
     } else if (response.statusCode == 403) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -56,7 +57,7 @@ class Auth {
   static Future<void> register(
       BuildContext context, String name, String email, String password) async {
     final response = await http.post(
-      Uri.parse('http://localhost:5000/api/auth/register'),
+      Uri.parse('${globals.url}/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'name': name,
